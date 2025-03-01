@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban Task Manager</title>
+
+    <!-- AngularJS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <!-- Drag and Drop Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-drag-and-drop-lists/2.1.0/angular-drag-and-drop-lists.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+
+        .board {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .column {
+            width: 250px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        ul {
+            min-height: 150px;
+            padding: 10px;
+            list-style: none;
+            border: 2px dashed #ddd;
+            border-radius: 5px;
+        }
+
+        li {
+            padding: 10px;
+            margin: 5px 0;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            cursor: move;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            background: #28a745;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body ng-app="kanbanApp" ng-controller="KanbanController">
+
+    <h2>Kanban Task Manager</h2>
+
+    <div class="board">
+        <div class="column" ng-repeat="status in statuses">
+            <h3>{{ status.name }}</h3>
+            <ul dnd-list="tasks[status.key]">
+                <li ng-repeat="task in tasks[status.key]" dnd-draggable="task" dnd-moved="tasks[status.key].splice($index, 1)">
+                    {{ task.name }}
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <button ng-click="addTask()">Add Task</button>
+
+    <script>
+        var app = angular.module("kanbanApp", ["dndLists"]);
+
+        app.controller("KanbanController", function ($scope) {
+            $scope.statuses = [
+                { key: "todo", name: "To Do" },
+                { key: "inProgress", name: "In Progress" },
+                { key: "done", name: "Done" }
+            ];
+
+            $scope.tasks = {
+                todo: [{ name: "Task 1" }, { name: "Task 2" }],
+                inProgress: [{ name: "Task 3" }],
+                done: []
+            };
+
+            $scope.addTask = function () {
+                var taskName = prompt("Enter task name:");
+                if (taskName) {
+                    $scope.tasks.todo.push({ name: taskName });
+                }
+            };
+        });
+    </script>
+
+</body>
+</html>
